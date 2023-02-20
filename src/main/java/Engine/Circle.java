@@ -31,7 +31,6 @@ public class Circle extends Object2d {
               float tempy = centerY + radiusY * (float) Math.sin(i);
               vertices.add(new Vector3f(tempx, tempy, 0.0f));
         }
-        System.out.println(vertices);
         return vertices;
     }
 }
