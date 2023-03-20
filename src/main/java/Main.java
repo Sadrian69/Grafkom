@@ -1,15 +1,10 @@
-import Engine.CircleSquare;
-import Engine.Object2d;
-import Engine.ShaderProgram;
-import Engine.Window;
-import org.joml.Vector2f;
+import Engine.*;
 import org.joml.Vector3f;
 import org.joml.Vector4f;
 import org.lwjgl.opengl.GL;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 
 import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.opengl.GL11.glClearColor;
@@ -17,8 +12,11 @@ import static org.lwjgl.opengl.GL30.*;
 
 public class Main {
     private Window window= new Window(1200, 1200, "yes");
-    private ArrayList<Object2d> lines = new ArrayList<>();
-    private ArrayList<CircleSquare> squares = new ArrayList<>();
+    private MouseInput mouseInput;
+    private ArrayList<Sphere> solarSystem = new ArrayList<>();
+    private long count;
+    private long countmoon;
+    private boolean click;
 
     public void run() {
         init();
@@ -33,78 +31,113 @@ public class Main {
     public void init(){
         window.init();
         GL.createCapabilities(); // don't put below stuff
+        mouseInput = window.getMouseInput();
 
         // code
 
-        lines.add(new Object2d(
+        solarSystem.add(new Sphere( //sun
                 Arrays.asList(
                         // shaderFile lokasi menyesuaikan object
                         new ShaderProgram.ShaderModuleData("resources/shaders/scene.vert", GL_VERTEX_SHADER),
                         new ShaderProgram.ShaderModuleData("resources/shaders/scene.frag", GL_FRAGMENT_SHADER)
                 ),
-                new ArrayList<>(),
-                new Vector4f(0.0f,1.0f,0.0f,1.0f)
+                new ArrayList<Vector3f>(),
+                new Vector4f(1.0f,0.9f,0.4f,1.0f),
+                0.0f, 0.0f, 0.0f,
+                0.5f, 0.5f, 0.5f,
+                40, 60
         ));
+        solarSystem.get(0).scaleObject(0.4f, 0.4f, 0.4f);
 
+        solarSystem.add(new Sphere( //mercury
+                Arrays.asList(
+                        // shaderFile lokasi menyesuaikan object
+                        new ShaderProgram.ShaderModuleData("resources/shaders/scene.vert", GL_VERTEX_SHADER),
+                        new ShaderProgram.ShaderModuleData("resources/shaders/scene.frag", GL_FRAGMENT_SHADER)
+                ),
+                new ArrayList<Vector3f>(),
+                new Vector4f(0.9f,0.9f,0.9f,1.0f),
+                0.0f, 0.28f, 0.0f,
+                0.05f, 0.05f, 0.05f,
+                40, 60
+        ));
+        solarSystem.get(1).scaleObject(0.1f,0.1f,0.1f);
+        solarSystem.get(1).translateObject(0.0f,0.28f,0.0f);
 
-//        lines.get(0).addVertices(new Vector3f(0.0f, 0.0f, 0.0f));
-//        squares.add(new CircleSquare(
-//                Arrays.asList(
-//                        // shaderFile lokasi menyesuaikan object
-//                        new ShaderProgram.ShaderModuleData("resources/shaders/scene.vert", GL_VERTEX_SHADER),
-//                        new ShaderProgram.ShaderModuleData("resources/shaders/scene.frag", GL_FRAGMENT_SHADER)
-//                ),
-//                new ArrayList<>(),
-//                new Vector4f(1.0f,0.0f,0.0f,1.0f),
-//                0.0f,0.0f,0.03f,0.03f
-//        ));
-//        lines.get(0).addVertices(new Vector3f(0.4f, 0.8f, 0.0f));
-//        squares.add(new CircleSquare(
-//                Arrays.asList(
-//                        // shaderFile lokasi menyesuaikan object
-//                        new ShaderProgram.ShaderModuleData("resources/shaders/scene.vert", GL_VERTEX_SHADER),
-//                        new ShaderProgram.ShaderModuleData("resources/shaders/scene.frag", GL_FRAGMENT_SHADER)
-//                ),
-//                new ArrayList<>(),
-//                new Vector4f(1.0f,0.0f,0.0f,1.0f),
-//                0.4f,0.8f,0.03f,0.03f
-//        ));
-//        lines.get(0).addVertices(new Vector3f(0.8f, 0.0f, 0.0f));
-//        squares.add(new CircleSquare(
-//                Arrays.asList(
-//                        // shaderFile lokasi menyesuaikan object
-//                        new ShaderProgram.ShaderModuleData("resources/shaders/scene.vert", GL_VERTEX_SHADER),
-//                        new ShaderProgram.ShaderModuleData("resources/shaders/scene.frag", GL_FRAGMENT_SHADER)
-//                ),
-//                new ArrayList<>(),
-//                new Vector4f(1.0f,0.0f,0.0f,1.0f),
-//                0.8f,0.0f,0.03f,0.03f
-//        ));
-//
-//        lines.get(0).updateCurve();
+        solarSystem.add(new Sphere( //venus
+                Arrays.asList(
+                        // shaderFile lokasi menyesuaikan object
+                        new ShaderProgram.ShaderModuleData("resources/shaders/scene.vert", GL_VERTEX_SHADER),
+                        new ShaderProgram.ShaderModuleData("resources/shaders/scene.frag", GL_FRAGMENT_SHADER)
+                ),
+                new ArrayList<Vector3f>(),
+                new Vector4f(0.64f,0.49f,0.11f,1.0f),
+                0.0f, 0.46f, 0.0f,
+                0.05f, 0.05f, 0.05f,
+                20, 30
+        ));
+        solarSystem.get(2).scaleObject(0.18f,0.18f,0.18f);
+        solarSystem.get(2).translateObject(0.0f,0.46f,0.0f);
 
-        // squares add di bawah
+        solarSystem.add(new Sphere( //mars
+                Arrays.asList(
+                        // shaderFile lokasi menyesuaikan object
+                        new ShaderProgram.ShaderModuleData("resources/shaders/scene.vert", GL_VERTEX_SHADER),
+                        new ShaderProgram.ShaderModuleData("resources/shaders/scene.frag", GL_FRAGMENT_SHADER)
+                ),
+                new ArrayList<Vector3f>(),
+                new Vector4f(0.27f,0.1f,0.0f,1.0f),
+                0.0f, 1.0f, 0.0f,
+                0.05f, 0.05f, 0.05f,
+                40, 60
+        ));
+        solarSystem.get(3).scaleObject(0.13f,0.13f,0.13f);
+        solarSystem.get(3).translateObject(0.0f,1.0f,0.0f);
+
+        solarSystem.add(new Sphere(//earth
+                Arrays.asList(
+                        // shaderFile lokasi menyesuaikan object
+                        new ShaderProgram.ShaderModuleData("resources/shaders/scene.vert", GL_VERTEX_SHADER),
+                        new ShaderProgram.ShaderModuleData("resources/shaders/scene.frag", GL_FRAGMENT_SHADER)
+                ),
+                new ArrayList<Vector3f>(),
+                new Vector4f(0.3f,0.3f,0.7f,1.0f),
+                0.0f, 0.71f, 0.0f,
+                0.05f, 0.05f, 0.05f,
+                40, 60
+        ));
+        solarSystem.get(4).scaleObject(0.17f,0.17f,0.17f);
+        solarSystem.get(4).translateObject(0.0f,0.71f,0.0f);
+
+        solarSystem.add(new Sphere(//moon
+                Arrays.asList(
+                        // shaderFile lokasi menyesuaikan object
+                        new ShaderProgram.ShaderModuleData("resources/shaders/scene.vert", GL_VERTEX_SHADER),
+                        new ShaderProgram.ShaderModuleData("resources/shaders/scene.frag", GL_FRAGMENT_SHADER)
+                ),
+                new ArrayList<Vector3f>(),
+                new Vector4f(1.0f,1.0f,0.84f,1.0f),
+                0.0f, 0.85f, 0.0f,
+                0.05f, 0.05f, 0.05f,
+                40, 60
+        ));
+        solarSystem.get(5).scaleObject(0.05f,0.05f,0.05f);
+        solarSystem.get(5).translateObject(0.0f,0.85f,0.0f);
+
+        count = 0;
+        countmoon=0;
+        click=false;
     }
     private void loop() {
         while (window.isOpen()){
-            input();
             window.update();
             glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
             GL.createCapabilities();
+            input();
 
             // code
-
-
-            for(Object2d line:lines){
-                line.setupVAOVBOCurve();
-                line.drawCurve();
-            }
-            for(Object2d line:lines){
-                line.setupVAOVBO();
-                line.drawLine();
-            }
-            for(CircleSquare square:squares){
-                square.draw();
+            for(Sphere sphere: solarSystem){
+                sphere.draw();
             }
 
 
@@ -121,68 +154,79 @@ public class Main {
         new Main().run();
     }
 
-    public void input(){
-        if (window.isKeyPressed(GLFW_KEY_W)){
-            System.out.println("W");
+    public void input() {
+        if (window.isKeyPressed(GLFW_KEY_F)) {
+            count++;
+            solarSystem.get(0).rotateObject((float) Math.toRadians(24.6f/4), 0.0f, 0.0f, 1.0f);
+
+            solarSystem.get(1).rotateObject((float) Math.toRadians(8.2f/4), 0.0f, 0.0f, 1.0f);
+
+            solarSystem.get(2).rotateObject((float) Math.toRadians(3.2f/4), 0.0f, 0.0f, 1.0f);
+
+            solarSystem.get(3).rotateObject((float) Math.toRadians(1.1f/4), 0.0f, 0.0f, 1.0f);
+
+            solarSystem.get(4).rotateObject((float) Math.toRadians(2.0f/4), 0.0f, 0.0f, 1.0f);
+
+            solarSystem.get(5).rotateObject((float) Math.toRadians(2.0f/4), 0.0f, 0.0f, 1.0f);
+            System.out.println(count);
         }
-        if (window.getMouseInput().isLeftButtonPressed()){
-            Vector2f pos = window.getMouseInput().getCurrentPos();
-            pos.x = (pos.x - (window.getWidth())/2.0f) / (window.getWidth()/2.0f);
-            pos.y = (pos.y - (window.getHeight())/2.0f) / (window.getHeight()/2.0f)*-1;
+        if (window.isKeyPressed(GLFW_KEY_G)) {
+            solarSystem.get(0).rotateObject((float) Math.toRadians(24.6f/4), 0.0f, 0.0f, 1.0f);
 
-            //System.out.printf("%f %f%n",pos.x,pos.y);
+            solarSystem.get(1).rotateObject((float) Math.toRadians(8.2f/4) * -count, 0.0f, 0.0f, 1.0f);
+            solarSystem.get(1).translateObject(0.0f, -solarSystem.get(1).getCenterY(), 0.0f);
+            solarSystem.get(1).rotateObject((float) Math.toRadians(24.6f/4), 0.0f, 0.0f, 1.0f);
+            solarSystem.get(1).translateObject(0.0f, solarSystem.get(1).getCenterY(), 0.0f);
+            solarSystem.get(1).rotateObject((float) Math.toRadians(8.2f/4) * count, 0.0f, 0.0f, 1.0f);
 
-            if((!(pos.x>0.97||pos.x<-0.97) && !(pos.y>0.97||pos.y<-0.97))){
-                List<Vector3f> curPoints = lines.get(0).getVertices();
-                boolean valid = true;
-                int index = 0;
-                for(Vector3f curPoint:curPoints){ //cek jarak, ideally reversed tapi mls
-                    // System.out.println(distance(pos.x,pos.y,curPoint.x,curPoint.y));
-                    if(distance(pos.x,pos.y,curPoint.x,curPoint.y) < 0.075f){
-                        valid = false;
-                        break;
-                    }
-                    index += 1;
-                }
-                if(!valid) {
-                    // System.out.println(index);
-                    squares.get(index).setCenterX(pos.x);
-                    squares.get(index).setCenterY(pos.y);
-                    squares.get(index).createCircle(); //generate koordinat sudut kotak
-                    squares.get(index).setupVAOVBO(); //setup
+            solarSystem.get(2).rotateObject((float) Math.toRadians(3.2f/4) * -count, 0.0f, 0.0f, 1.0f);
+            solarSystem.get(2).translateObject(0.0f, -solarSystem.get(2).getCenterY(), 0.0f);
+            solarSystem.get(2).rotateObject((float) Math.toRadians(24.6f/4), 0.0f, 0.0f, 1.0f);
+            solarSystem.get(2).translateObject(0.0f, solarSystem.get(2).getCenterY(), 0.0f);
+            solarSystem.get(2).rotateObject((float) Math.toRadians(3.2f/4) * count, 0.0f, 0.0f, 1.0f);
 
-                    List<Vector3f> temp = lines.get(0).getVertices();
-                    temp.set(index, new Vector3f(pos.x, pos.y, 0));
-                    lines.get(0).setVertices(temp);
-                    lines.get(0).setupVAOVBO();
+            solarSystem.get(3).rotateObject((float) Math.toRadians(1.1f/4) * -count, 0.0f, 0.0f, 1.0f);
+            solarSystem.get(3).translateObject(0.0f, -solarSystem.get(3).getCenterY(), 0.0f);
+            solarSystem.get(3).rotateObject((float) Math.toRadians(24.6f/4), 0.0f, 0.0f, 1.0f);
+            solarSystem.get(3).translateObject(0.0f, solarSystem.get(3).getCenterY(), 0.0f);
+            solarSystem.get(3).rotateObject((float) Math.toRadians(1.1f/4) * count, 0.0f, 0.0f, 1.0f);
 
-                    lines.get(0).updateCurve();
+            solarSystem.get(4).rotateObject((float) Math.toRadians(2.0f/4) * -count, 0.0f, 0.0f, 1.0f);
+            solarSystem.get(4).translateObject(0.0f, -solarSystem.get(4).getCenterY(), 0.0f);
+            solarSystem.get(4).rotateObject((float) Math.toRadians(24.6f/4), 0.0f, 0.0f, 1.0f);
+            solarSystem.get(4).translateObject(0.0f, solarSystem.get(4).getCenterY(), 0.0f);
+            solarSystem.get(4).rotateObject((float) Math.toRadians(2.0f/4) * count, 0.0f, 0.0f, 1.0f);
 
-                    return;
-                }
 
-                
-                //System.out.println("x: "+pos.x+" y: "+pos.y);
-                lines.get(0).addVertices(new Vector3f(pos.x, pos.y, 0.0f));
-                squares.add(new CircleSquare(
-                        Arrays.asList(
-                                // shaderFile lokasi menyesuaikan object
-                                new ShaderProgram.ShaderModuleData("resources/shaders/scene.vert", GL_VERTEX_SHADER),
-                                new ShaderProgram.ShaderModuleData("resources/shaders/scene.frag", GL_FRAGMENT_SHADER)
-                        ),
-                        new ArrayList<>(),
-                        new Vector4f(1.0f,0.0f,0.0f,1.0f),
-                        pos.x,pos.y,0.03f,0.03f
-                ));
+            solarSystem.get(5).rotateObject((float) Math.toRadians(2.0f/4) * -count, 0.0f, 0.0f, 1.0f);
+            solarSystem.get(5).translateObject(0.0f, -solarSystem.get(4).getCenterY(), 0.0f);
+            solarSystem.get(5).rotateObject((float) Math.toRadians(24.6f/4)*-countmoon, 0.0f, 0.0f, 1.0f);
+            solarSystem.get(5).translateObject(0.0f, solarSystem.get(4).getCenterY(), 0.0f);
+            solarSystem.get(5).rotateObject((float) Math.toRadians(2.0f/4) * count, 0.0f, 0.0f, 1.0f);
 
-                lines.get(0).updateCurve();
-            }
+            solarSystem.get(5).rotateObject((float) Math.toRadians(2.0f/4) * -count, 0.0f, 0.0f, 1.0f);
+            solarSystem.get(5).translateObject(0.0f, -solarSystem.get(5).getCenterY(), 0.0f);
+            solarSystem.get(5).rotateObject((float) Math.toRadians(24.6f/4), 0.0f, 0.0f, 1.0f);
+            solarSystem.get(5).translateObject(0.0f, solarSystem.get(5).getCenterY(), 0.0f);
+            solarSystem.get(5).rotateObject((float) Math.toRadians(2.0f/4) * count, 0.0f, 0.0f, 1.0f);
+
+
+            solarSystem.get(5).rotateObject((float) Math.toRadians(2.0f/4) * -count, 0.0f, 0.0f, 1.0f);
+            solarSystem.get(5).translateObject(0.0f, -solarSystem.get(4).getCenterY(), 0.0f);
+            solarSystem.get(5).rotateObject((float) Math.toRadians(24.6f/4)*countmoon, 0.0f, 0.0f, 1.0f);
+            solarSystem.get(5).translateObject(0.0f, solarSystem.get(4).getCenterY(), 0.0f);
+            solarSystem.get(5).rotateObject((float) Math.toRadians(2.0f/4) * count, 0.0f, 0.0f, 1.0f);
+
         }
+
+        if (window.isKeyPressed(GLFW_KEY_H)) {
+            countmoon += 1;
+            solarSystem.get(5).rotateObject((float) Math.toRadians(2.0f/4) * -count, 0.0f, 0.0f, 1.0f);
+            solarSystem.get(5).translateObject(0.0f, -solarSystem.get(4).getCenterY(), 0.0f);
+            solarSystem.get(5).rotateObject((float) Math.toRadians(24.6f/4), 0.0f, 0.0f, 1.0f);
+            solarSystem.get(5).translateObject(0.0f, solarSystem.get(4).getCenterY(), 0.0f);
+            solarSystem.get(5).rotateObject((float) Math.toRadians(2.0f/4) * count, 0.0f, 0.0f, 1.0f);
+        }
+
     }
-
-    public float distance(float x1, float y1, float x2, float y2){
-        return (float) Math.sqrt((x2-x1)*(x2-x1)+(y2-y1)*(y2-y1));
-    }
-
-
 }

@@ -1,5 +1,6 @@
 package Engine;
 
+import org.joml.Matrix4f;
 import org.joml.Vector3f;
 import org.joml.Vector4f;
 
@@ -8,7 +9,7 @@ import java.util.List;
 
 import static org.lwjgl.opengl.GL30.*;
 
-public class Object2d extends ShaderProgram{
+public class Object extends ShaderProgram{
     List<Vector3f> vertices;
     List<Vector3f> curveVertices;
 
@@ -26,21 +27,29 @@ public class Object2d extends ShaderProgram{
     int vbo;
     int vboColor;
 
+    Matrix4f model;
+
+    public Matrix4f getModel() {
+        return model;
+    }
+
     Vector4f color;
 
     UniformsMap uniformsMap;
 
-    public Object2d(List<ShaderModuleData> shaderModuleDataList, List<Vector3f> vertices, Vector4f color) {
+    public Object(List<ShaderModuleData> shaderModuleDataList, List<Vector3f> vertices, Vector4f color) {
         super(shaderModuleDataList);
         this.vertices = vertices;
         this.color = color;
         setupVAOVBO();
         uniformsMap = new UniformsMap(getProgramId());
         uniformsMap.createUniform("uniColor");
+        uniformsMap.createUniform("model");
         this.curveVertices = new ArrayList<>();
+        model = new Matrix4f();
     }
 
-    public Object2d(List<ShaderModuleData> shaderModuleDataList, List<Vector3f> vertices, List<Vector3f> verticesColor) {
+    public Object(List<ShaderModuleData> shaderModuleDataList, List<Vector3f> vertices, List<Vector3f> verticesColor) {
         super(shaderModuleDataList);
         this.vertices = vertices;
         this.verticesColor = verticesColor;
@@ -83,6 +92,7 @@ public class Object2d extends ShaderProgram{
     public void drawSetup(){
         bind();
         uniformsMap.setUniform("uniColor", color);
+        uniformsMap.setUniform("model", model);
         // bind vbo
         glEnableVertexAttribArray(0);
         glBindBuffer(GL_ARRAY_BUFFER, vbo);
@@ -107,7 +117,7 @@ public class Object2d extends ShaderProgram{
         // draw vertices
         glLineWidth(10);
         glPointSize(10);
-        glDrawArrays(GL_TRIANGLE_FAN, 0, vertices.size());
+        glDrawArrays(GL_POLYGON, 0, vertices.size());
 
     }
 
@@ -187,6 +197,16 @@ public class Object2d extends ShaderProgram{
         } else {
             return binomialCoefficient(n - 1, k - 1) + binomialCoefficient(n - 1, k);
         }
+    }
+
+    public void translateObject(Float offsetX, Float offsetY, Float offsetZ){
+        model = new Matrix4f().translate(offsetX, offsetY, offsetZ).mul(new Matrix4f(model));
+    }
+    public void rotateObject(Float degree, Float offsetX, Float offsetY, Float offsetZ){
+        model = new Matrix4f().rotate(degree, offsetX, offsetY, offsetZ).mul(new Matrix4f(model));
+    }
+    public void scaleObject(Float offsetX, Float offsetY, Float offsetZ){
+        model = new Matrix4f().scale(offsetX, offsetY, offsetZ).mul(new Matrix4f(model));
     }
 
 }
