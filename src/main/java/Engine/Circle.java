@@ -38,14 +38,14 @@ public class Circle extends Object {
         this.centerY = centerY;
     }
 
-    public void draw(){
-        drawSetup();
-        // draw vertices
-        glLineWidth(10);
-        glPointSize(10);
-        glDrawArrays(GL_TRIANGLE_FAN, 0, vertices.size());
-
-    }
+//    public void draw(){
+//        drawSetup();
+//        // draw vertices
+//        glLineWidth(10);
+//        glPointSize(10);
+//        glDrawArrays(GL_TRIANGLE_FAN, 0, vertices.size());
+//
+//    }
 
     public void createCircle(){
         vertices.clear();

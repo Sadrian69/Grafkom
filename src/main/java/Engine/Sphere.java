@@ -26,7 +26,8 @@ public class Sphere extends Circle {
         this.radiusZ = radiusZ;
         this.stackCount = stackCount;
         this.sectorCount = sectorCount;
-        createSphere();
+        createBox();
+        //createSphere();
         // createEllipsoid();
         // createHyperboloid1();
         // createHyperboloid2();
@@ -36,14 +37,14 @@ public class Sphere extends Circle {
         setupVAOVBO();
     }
 
-    public void draw(){
-        drawSetup();
-        // draw vertices
-        glLineWidth(2);
-        glPointSize(2);
-        glDrawArrays(GL_LINE_STRIP, 0, vertices.size());
-
-    }
+//    public void draw(){
+//        drawSetup();
+//        // draw vertices
+//        glLineWidth(2);
+//        glPointSize(2);
+//        glDrawArrays(GL_LINE_STRIP, 0, vertices.size());
+//
+//    }
 
     public void createBox(){
         vertices.clear();
