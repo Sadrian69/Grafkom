@@ -324,10 +324,10 @@ public class Sphere extends Circle {
         }
     }
 
-    public void drawIndices(){
-        drawSetup();
-        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
-        glDrawElements(GL_LINE_STRIP,index.size(), GL_UNSIGNED_INT, 0);
-    }
+//    public void drawIndices(){
+//        drawSetup();
+//        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
+//        glDrawElements(GL_LINE_STRIP,index.size(), GL_UNSIGNED_INT, 0);
+//    }
 
 }

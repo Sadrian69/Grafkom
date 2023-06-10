@@ -1,12 +1,11 @@
-import Engine.*;
 import Engine.Object;
+import Engine.*;
 import org.joml.Vector3f;
 import org.joml.Vector4f;
 import org.lwjgl.opengl.GL;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 
 import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.opengl.GL11.glClearColor;
@@ -16,7 +15,12 @@ public class Main {
     private Window window= new Window(1200, 1200, "yes");
     private MouseInput mouseInput;
     private ArrayList<Object> objects = new ArrayList<>();
-    private Integer countDegree;
+    private ArrayList<Object> objectsRectangle = new ArrayList<>();
+    private ArrayList<Object> objectsPointsControl = new ArrayList<>();
+
+    int countDegree = 0;
+    Projection projection = new Projection(window.getWidth(),window.getHeight());
+    Camera camera = new Camera();
 
     public void run() {
         init();
@@ -32,7 +36,8 @@ public class Main {
         window.init();
         GL.createCapabilities(); // don't put below stuff
         mouseInput = window.getMouseInput();
-
+        camera.setPosition(0,0,1.7f);
+        camera.setRotation((float)Math.toRadians(0.0f),(float)Math.toRadians(30.0f));
         // code
         objects.add(new Sphere(
                 Arrays.asList(
@@ -87,7 +92,7 @@ public class Main {
 
             // code
             for(Object object:objects){
-                object.draw();
+                object.draw(camera, projection);
             }
 
 

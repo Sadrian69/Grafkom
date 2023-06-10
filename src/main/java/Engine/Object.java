@@ -66,6 +66,8 @@ public class Object extends ShaderProgram{
         uniformsMap = new UniformsMap(getProgramId());
         uniformsMap.createUniform("uniColor");
         uniformsMap.createUniform("model");
+        uniformsMap.createUniform("projection");
+        uniformsMap.createUniform("view");
         this.curveVertices = new ArrayList<>();
         model = new Matrix4f();
         childObject = new ArrayList<>();
@@ -112,10 +114,12 @@ public class Object extends ShaderProgram{
         glBufferData(GL_ARRAY_BUFFER, Utils.listoFloat(verticesColor), GL_STATIC_DRAW);
     }
 
-    public void drawSetup(){
+    public void drawSetup(Camera camera, Projection projection){
         bind();
         uniformsMap.setUniform("uniColor", color);
         uniformsMap.setUniform("model", model);
+        uniformsMap.setUniform("view", camera.getViewMatrix());
+        uniformsMap.setUniform("projection", projection.getProjMatrix());
         // bind vbo
         glEnableVertexAttribArray(0);
         glBindBuffer(GL_ARRAY_BUFFER, vbo);
@@ -135,14 +139,14 @@ public class Object extends ShaderProgram{
         glVertexAttribPointer(1,3, GL_FLOAT, false, 0, 0);
     }
 
-    public void draw(){
-        drawSetup();
+    public void draw(Camera camera, Projection projection){
+        drawSetup(camera, projection);
         // draw vertices
         glLineWidth(10);
         glPointSize(10);
         glDrawArrays(GL_POLYGON, 0, vertices.size());
         for(Object child:childObject){
-            child.draw();
+            child.draw(camera, projection);
         }
     }
 
@@ -155,9 +159,9 @@ public class Object extends ShaderProgram{
 
     }
 
-    public void drawLine(){
+    public void drawLine(Camera camera, Projection projection){
         setupVAOVBO();
-        drawSetup();
+        drawSetup(camera, projection);
         glLineWidth(10);
         glPointSize(10);
         glDrawArrays(GL_LINE_STRIP, 0, vertices.size());
@@ -180,13 +184,13 @@ public class Object extends ShaderProgram{
         glBufferData(GL_ARRAY_BUFFER, Utils.listoFloat(curveVertices), GL_STATIC_DRAW);
     }
 
-    public void drawCurve(){
+    public void drawCurve(Camera camera, Projection projection){
         if(vertices.size()<3) {
-            if(vertices.size()==2) drawLine();
+            if(vertices.size()==2) drawLine(camera, projection);
             return;
         }
         setupVAOVBOCurve();
-        drawSetup();
+        drawSetup(camera, projection);
         glLineWidth(10);
         glPointSize(10);
         glDrawArrays(GL_LINE_STRIP, 0, curveVertices.size());

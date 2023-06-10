@@ -14,14 +14,14 @@ public class CircleTriangle extends Object {
         super(shaderModuleDataList, vertices, color);
     }
 
-    public void draw(){
-        drawSetup();
-        // draw vertices
-        glLineWidth(10);
-        glPointSize(10);
-        glDrawArrays(GL_TRIANGLE_FAN, 0, vertices.size());
-
-    }
+//    public void draw(){
+//        drawSetup();
+//        // draw vertices
+//        glLineWidth(10);
+//        glPointSize(10);
+//        glDrawArrays(GL_TRIANGLE_FAN, 0, vertices.size());
+//
+//    }
 
     public static List<Vector3f> createCircle(float centerX, float centerY, float radiusX, float radiusY){
         List<Vector3f> vertices = new ArrayList<>();

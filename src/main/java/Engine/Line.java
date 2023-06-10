@@ -13,10 +13,10 @@ public class Line extends Object {
         super(shaderModuleDataList, vertices, color);
     }
 
-    public void draw(){
-        drawSetup();
-        glLineWidth(2);
-        glPointSize(2);
-        glDrawArrays(GL_LINE_STRIP, 0, vertices.size());
-    }
+//    public void draw(){
+//        drawSetup();
+//        glLineWidth(2);
+//        glPointSize(2);
+//        glDrawArrays(GL_LINE_STRIP, 0, vertices.size());
+//    }
 }

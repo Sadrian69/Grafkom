@@ -20,10 +20,10 @@ public class Rectangle extends Object {
         glBufferData(GL_ELEMENT_ARRAY_BUFFER, Utils.listoInt(index), GL_STATIC_DRAW);
     }
 
-    public void draw(){
-        drawSetup();
-        glLineWidth(10);
-        glPointSize(10);
-        glDrawArrays(GL_TRIANGLE_FAN, 0, index.size());
-    }
+//    public void draw(){
+//        drawSetup();
+//        glLineWidth(10);
+//        glPointSize(10);
+//        glDrawArrays(GL_TRIANGLE_FAN, 0, index.size());
+//    }
 }
