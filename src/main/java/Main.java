@@ -1,132 +1,255 @@
-import Engine.Object;
 import Engine.*;
+import Engine.Object;
+import org.joml.Vector2f;
 import org.joml.Vector3f;
 import org.joml.Vector4f;
 import org.lwjgl.opengl.GL;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.opengl.GL11.glClearColor;
 import static org.lwjgl.opengl.GL30.*;
 
 public class Main {
-    private Window window= new Window(1200, 1200, "yes");
-    private MouseInput mouseInput;
-    private ArrayList<Object> objects = new ArrayList<>();
-    private ArrayList<Object> objectsRectangle = new ArrayList<>();
-    private ArrayList<Object> objectsPointsControl = new ArrayList<>();
+    private Window window =
+            new Window
+                    (1200,1200,"Hello World");
+    private ArrayList<Object> objects
+            = new ArrayList<>();
+    private ArrayList<Object> objectsRectangle
+            = new ArrayList<>();
 
+    private ArrayList<Object> objectsPointsControl
+            = new ArrayList<>();
+
+    private MouseInput mouseInput;
     int countDegree = 0;
     Projection projection = new Projection(window.getWidth(),window.getHeight());
     Camera camera = new Camera();
-
-    public void run() {
-        init();
-        loop();
-
-        // Terminate glfw and free the error callback
-        glfwTerminate();
-        glfwSetErrorCallback(null).free();
-
-    }
-
     public void init(){
         window.init();
-        GL.createCapabilities(); // don't put below stuff
+        GL.createCapabilities();
         mouseInput = window.getMouseInput();
-        camera.setPosition(0,0,1.7f);
+        camera.setPosition(0,0,1.0f);
         camera.setRotation((float)Math.toRadians(0.0f),(float)Math.toRadians(30.0f));
-        // code
+        //code
+//        objects.add(new Object2d(
+//            Arrays.asList(
+//                //shaderFile lokasi menyesuaikan objectnya
+//                new ShaderProgram.ShaderModuleData
+//                ("resources/shaders/scene.vert"
+//                , GL_VERTEX_SHADER),
+//                new ShaderProgram.ShaderModuleData
+//                ("resources/shaders/scene.frag"
+//                , GL_FRAGMENT_SHADER)
+//            ),
+//            new ArrayList<>(
+//                List.of(
+//                    new Vector3f(0.0f,0.5f,0.0f),
+//                    new Vector3f(-0.5f,-0.5f,0.0f),
+//                    new Vector3f(0.5f,-0.5f,0.0f)
+//                )
+//            ),
+//            new Vector4f(0.0f,1.0f,1.0f,1.0f)
+//        ));
+//        objects.add(new Object(
+//            Arrays.asList(
+//                //shaderFile lokasi menyesuaikan objectnya
+//                new ShaderProgram.ShaderModuleData
+//                ("resources/shaders/" +
+//                    "sceneWithVerticesColor.vert"
+//                        , GL_VERTEX_SHADER),
+//                new ShaderProgram.ShaderModuleData
+//                    ("resources/shaders/" +
+//                    "sceneWithVerticesColor.frag"
+//                            , GL_FRAGMENT_SHADER)
+//        ),
+//        new ArrayList<>(
+//                List.of(
+//                    new Vector3f(0.0f,0.5f,0.0f),
+//                    new Vector3f(-0.5f,-0.5f,0.0f),
+//                    new Vector3f(0.5f,-0.5f,0.0f)
+//                )
+//            ),
+//        new ArrayList<>(
+//            List.of(
+//                new Vector3f(1.0f,0.0f,0.0f),
+//                new Vector3f(0.0f,1.0f,0.0f),
+//                new Vector3f(0.0f,0.0f,1.0f)
+//            )
+//        )
+//        ));
+//        objectsRectangle.add(new Rectangle(
+//            Arrays.asList(
+//                //shaderFile lokasi menyesuaikan objectnya
+//                new ShaderProgram.ShaderModuleData
+//                ("resources/shaders/scene.vert"
+//                , GL_VERTEX_SHADER),
+//                new ShaderProgram.ShaderModuleData
+//                ("resources/shaders/scene.frag"
+//                , GL_FRAGMENT_SHADER)
+//            ),
+//            new ArrayList<>(
+//                List.of(
+//                    new Vector3f(0.0f,0.0f,0.0f),
+//                    new Vector3f(0.5f,0.0f,0.0f),
+//                    new Vector3f(0.0f,0.5f,0.0f),
+//                    new Vector3f( 0.5f,0.5f,0.0f)
+//                )
+//            ),
+//            new Vector4f(0.0f,1.0f,1.0f,1.0f),
+//            Arrays.asList(0,1,2,1,2,3)
+//
+//        ));
+//        objectsPointsControl.add(new Object(
+//            Arrays.asList(
+//                //shaderFile lokasi menyesuaikan objectnya
+//                new ShaderProgram.ShaderModuleData
+//                ("resources/shaders/scene.vert"
+//                , GL_VERTEX_SHADER),
+//                new ShaderProgram.ShaderModuleData
+//                ("resources/shaders/scene.frag"
+//                , GL_FRAGMENT_SHADER)
+//            ),
+//            new ArrayList<>(),
+//            new Vector4f(0.0f,1.0f,1.0f,1.0f)
+//        ));
         objects.add(new Sphere(
                 Arrays.asList(
                         new ShaderProgram.ShaderModuleData("resources/shaders/scene.vert", GL_VERTEX_SHADER),
                         new ShaderProgram.ShaderModuleData("resources/shaders/scene.frag", GL_FRAGMENT_SHADER)
                 ),
-                new ArrayList<Vector3f>(),
+                new ArrayList<>(),
                 new Vector4f(0.0f,1.0f,0.0f,1.0f),
-                0f,0f,0f,
-                0.125f, 0.125f, 0.125f,
-                200, 100
+                Arrays.asList(0.0f,0.0f,0.0f),
+                0.125f,
+                0.125f,
+                0.125f,
+                36,
+                18
         ));
 //        objects.get(0).translateObject(0.5f,0.0f,0.0f);
-        objects.get(0).scaleObject(2f,2f,2f);
-
-        objects.get(0).getChildObject().add(new Sphere(
-                Arrays.asList(
-                        new ShaderProgram.ShaderModuleData("resources/shaders/scene.vert", GL_VERTEX_SHADER),
-                        new ShaderProgram.ShaderModuleData("resources/shaders/scene.frag", GL_FRAGMENT_SHADER)
-                ),
-                new ArrayList<Vector3f>(),
-                new Vector4f(0.0f,1.0f,0.0f,1.0f),
-                0f,0f,0f,
-                0.125f, 0.125f, 0.125f,
-                200, 100
-        ));
-        objects.get(0).getChildObject().get(0).translateObject(0.5f,0.0f,0.0f);
-
-        objects.get(0).getChildObject().get(0).getChildObject().add(new Sphere(
-                Arrays.asList(
-                        new ShaderProgram.ShaderModuleData("resources/shaders/scene.vert", GL_VERTEX_SHADER),
-                        new ShaderProgram.ShaderModuleData("resources/shaders/scene.frag", GL_FRAGMENT_SHADER)
-                ),
-                new ArrayList<Vector3f>(),
-                new Vector4f(0.0f,1.0f,0.0f,1.0f),
-                0f,0f,0f,
-                0.125f, 0.125f, 0.125f,
-                200, 100
-        ));
-        objects.get(0).getChildObject().get(0).getChildObject().get(0).scaleObject(0.5f,0.5f,0.5f);
-        objects.get(0).getChildObject().get(0).getChildObject().get(0).translateObject(0.5f,-0.1f,0.0f);
-
-
-        countDegree = 0;
+//        objects.get(0).scaleObject(1f,1f,1f);
+//
+//        objects.get(0).getChildObject().add(new Sphere(
+//                Arrays.asList(
+//                        new ShaderProgram.ShaderModuleData("resources/shaders/scene.vert", GL_VERTEX_SHADER),
+//                        new ShaderProgram.ShaderModuleData("resources/shaders/scene.frag", GL_FRAGMENT_SHADER)
+//                ),
+//                new ArrayList<>(),
+//                new Vector4f(0.0f,1.0f,0.0f,1.0f),
+//                Arrays.asList(0.0f,0.0f,0.0f),
+//                0.125f,
+//                0.125f,
+//                0.125f,
+//                36,
+//                18
+//        ));
+//        objects.get(0).getChildObject().get(0).translateObject(0.25f,0.0f,0.0f);
+////        objects.get(0).getChildObject().get(0).setCenterPoint(Arrays.asList(0.25f,0.0f,0.0f));
+//
+//        objects.get(0).getChildObject().add(new Sphere(
+//                Arrays.asList(
+//                        new ShaderProgram.ShaderModuleData("resources/shaders/scene.vert", GL_VERTEX_SHADER),
+//                        new ShaderProgram.ShaderModuleData("resources/shaders/scene.frag", GL_FRAGMENT_SHADER)
+//                ),
+//                new ArrayList<>(),
+//                new Vector4f(0.0f,1.0f,0.0f,1.0f),
+//                Arrays.asList(0.0f,0.0f,0.0f),
+//                0.125f,
+//                0.125f,
+//                0.125f,
+//                36,
+//                18
+//        ));
+//        objects.get(0).getChildObject().get(1).translateObject(0.5f,0.0f,0.0f);
+////        objects.get(0).getChildObject().get(1).setCenterPoint(Arrays.asList(0.5f,0.0f,0.0f));
+//
+//        objects.get(0).getChildObject().get(1).getChildObject().add(new Sphere(
+//                Arrays.asList(
+//                        new ShaderProgram.ShaderModuleData("resources/shaders/scene.vert", GL_VERTEX_SHADER),
+//                        new ShaderProgram.ShaderModuleData("resources/shaders/scene.frag", GL_FRAGMENT_SHADER)
+//                ),
+//                new ArrayList<>(),
+//                new Vector4f(0.0f,1.0f,0.0f,1.0f),
+//                Arrays.asList(0.0f,0.0f,0.0f),
+//                0.125f,
+//                0.125f,
+//                0.125f,
+//                36,
+//                18
+//        ));
+//        objects.get(0).getChildObject().get(1).getChildObject().get(0).scaleObject(0.5f,0.5f,0.5f);
+//        objects.get(0).getChildObject().get(1).getChildObject().get(0).translateObject(0.5f,-0.1f,0.0f);
+////        objects.get(0).getChildObject().get(1).getChildObject().get(0).setCenterPoint(Arrays.asList(0.5f,-0.1f,0.0f));
     }
-    private void loop() {
-        while (window.isOpen()){
+    public void input(){
+        float move = 0.01f;
+        if (window.isKeyPressed(GLFW_KEY_W)) {
+            camera.moveForward(move);
+        }
+        if (window.isKeyPressed(GLFW_KEY_S)) {
+            camera.moveBackwards(move);
+        }
+        if (window.isKeyPressed(GLFW_KEY_A)) {
+            camera.moveLeft(move);
+        }
+        if (window.isKeyPressed(GLFW_KEY_D)) {
+            camera.moveRight(move);
+        }
+        if(mouseInput.isLeftButtonPressed()){
+            Vector2f displayVec = window.getMouseInput().getDisplVec();
+            camera.addRotation((float)Math.toRadians(displayVec.x * 0.1f),
+                    (float)Math.toRadians(displayVec.y * 0.1f));
+        }
+        if(window.getMouseInput().getScroll().y != 0){
+            projection.setFOV(projection.getFOV()- (window.getMouseInput().getScroll().y*0.01f));
+            window.getMouseInput().setScroll(new Vector2f());
+        }
+    }
+    public void loop(){
+        while (window.isOpen()) {
             window.update();
-            glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+            glClearColor(0.0f,
+                    0.0f, 0.0f,
+                    0.0f);
             GL.createCapabilities();
             input();
 
-            // code
-            for(Object object:objects){
-                object.draw(camera, projection);
+            //code
+            for(Object object: objects){
+                object.draw(camera,projection);
             }
+//            for(Object object: objectsRectangle){
+//                object.draw();
+//            }
+//            for(Object object: objectsPointsControl){
+//                object.drawLine();
+//            }
 
-
-            // restore state
+            // Restore state
             glDisableVertexAttribArray(0);
-            // poll for window events
-            // the key callback above will only be
-            // invoked during this call
+
+            // Poll for window events.
+            // The key callback above will only be
+            // invoked during this call.
             glfwPollEvents();
         }
     }
+    public void run() {
 
+        init();
+        loop();
+
+        // Terminate GLFW and
+        // free the error callback
+        glfwTerminate();
+        glfwSetErrorCallback(null).free();
+    }
     public static void main(String[] args) {
         new Main().run();
-    }
-
-    public void input() {
-        if (window.isKeyPressed(GLFW_KEY_W)) {
-            countDegree++;
-            objects.get(0).rotateObject((float) Math.toRadians(2f),0.0f,0.0f,1.0f);
-            for(Object child:objects.get(0).getChildObject()){
-                Vector3f tempCenterPoint = child.updateCenterPoint();
-                child.translateObject(tempCenterPoint.x*-1, tempCenterPoint.y*-1, tempCenterPoint.z*-1);
-                child.rotateObject((float) Math.toRadians(5f),0f,0f,1f);
-                child.translateObject(tempCenterPoint.x, tempCenterPoint.y, tempCenterPoint.z);
-                for(Object child2:objects.get(0).getChildObject().get(0).getChildObject()){
-                    Vector3f tempCenterPoint2 = child2.updateCenterPoint();
-                    child2.translateObject(tempCenterPoint2.x*-1, tempCenterPoint2.y*-1, tempCenterPoint2.z*-1);
-                    child2.rotateObject((float) Math.toRadians(10f),0f,0f,1f);
-                    child2.translateObject(tempCenterPoint2.x, tempCenterPoint2.y, tempCenterPoint2.z);
-                }
-            }
-//                child.rotateObject((float) Math.toRadians(0.5f),0.0f,0.0f,1.0f);
-            }
-
     }
 }

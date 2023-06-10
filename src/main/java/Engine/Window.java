@@ -2,6 +2,7 @@ package Engine;
 
 import org.lwjgl.glfw.GLFWErrorCallback;
 import org.lwjgl.glfw.GLFWVidMode;
+import org.lwjgl.opengl.GL;
 import org.lwjgl.system.MemoryStack;
 
 import java.nio.IntBuffer;
@@ -18,6 +19,7 @@ public class Window {
     private boolean open=  true;
     private int width, height;
     private String title;
+
     private MouseInput mouseInput;
 
 
@@ -101,6 +103,8 @@ public class Window {
 
         mouseInput = new MouseInput(window);
 
+        GL.createCapabilities();
+        glEnable(GL_DEPTH_TEST);
     }
 
     public void update(){

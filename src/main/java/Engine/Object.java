@@ -8,27 +8,24 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import static org.lwjgl.opengl.GL30.*;
+import static org.lwjgl.opengl.GL15.*;
+import static org.lwjgl.opengl.GL15.GL_STATIC_DRAW;
+import static org.lwjgl.opengl.GL20.glEnableVertexAttribArray;
+import static org.lwjgl.opengl.GL20.glVertexAttribPointer;
+import static org.lwjgl.opengl.GL30.glBindVertexArray;
+import static org.lwjgl.opengl.GL30.glGenVertexArrays;
 
 public class Object extends ShaderProgram{
+
     List<Vector3f> vertices;
-    List<Vector3f> curveVertices;
-
-    public void setVertices(List<Vector3f> vertices) {
-        this.vertices = vertices;
-    }
-
-    public List<Vector3f> getVertices() {
-        return vertices;
-    }
-
-    List<Vector3f> verticesColor;
-
     int vao;
     int vbo;
-    int vboColor;
+    UniformsMap uniformsMap;
+    Vector4f color;
 
     Matrix4f model;
+
+    int vboColor;
 
     List<Object> childObject;
     List<Float> centerPoint;
@@ -50,206 +47,181 @@ public class Object extends ShaderProgram{
         this.centerPoint = centerPoint;
     }
 
-    public Matrix4f getModel() {
-        return model;
-    }
-
-    Vector4f color;
-
-    UniformsMap uniformsMap;
-
-    public Object(List<ShaderModuleData> shaderModuleDataList, List<Vector3f> vertices, Vector4f color) {
+    List<Vector3f> verticesColor;
+    public Object(List<ShaderModuleData> shaderModuleDataList
+            , List<Vector3f> vertices
+            , Vector4f color) {
         super(shaderModuleDataList);
         this.vertices = vertices;
-        this.color = color;
-        setupVAOVBO();
+//        setupVAOVBO();
         uniformsMap = new UniformsMap(getProgramId());
-        uniformsMap.createUniform("uniColor");
-        uniformsMap.createUniform("model");
-        uniformsMap.createUniform("projection");
-        uniformsMap.createUniform("view");
-        this.curveVertices = new ArrayList<>();
-        model = new Matrix4f();
+//        uniformsMap.createUniform(
+//                "uni_color");
+//        uniformsMap.createUniform(
+//                "model");
+//        uniformsMap.createUniform(
+//                "projection");
+//        uniformsMap.createUniform(
+//                "view");
+        this.color = color;
+        model = new Matrix4f().identity();
         childObject = new ArrayList<>();
         centerPoint = Arrays.asList(0f,0f,0f);
     }
-
-    public Object(List<ShaderModuleData> shaderModuleDataList, List<Vector3f> vertices, List<Vector3f> verticesColor) {
+    public Object(List<ShaderModuleData> shaderModuleDataList,
+                  List<Vector3f> vertices,
+                  List<Vector3f> verticesColor) {
         super(shaderModuleDataList);
         this.vertices = vertices;
         this.verticesColor = verticesColor;
         setupVAOVBOWithVerticesColor();
-        this.curveVertices = new ArrayList<>();
     }
-
     public void setupVAOVBO(){
-        // set vao
+        //set vao
         vao = glGenVertexArrays();
         glBindVertexArray(vao);
 
-        // set vbo
+        //set vbo
         vbo = glGenBuffers();
         glBindBuffer(GL_ARRAY_BUFFER, vbo);
-
-        // mengirim vertices
-        glBufferData(GL_ARRAY_BUFFER, Utils.listoFloat(vertices), GL_STATIC_DRAW);
+        glBufferData(GL_ARRAY_BUFFER,
+                Utils.listoFloat(vertices),
+                GL_STATIC_DRAW);
     }
-
-
     public void setupVAOVBOWithVerticesColor(){
-        // set vao
+        //set vao
         vao = glGenVertexArrays();
         glBindVertexArray(vao);
 
-        // set vbo
+        //set vbo
         vbo = glGenBuffers();
         glBindBuffer(GL_ARRAY_BUFFER, vbo);
-        // mengirim vertices
-        glBufferData(GL_ARRAY_BUFFER, Utils.listoFloat(vertices), GL_STATIC_DRAW);
+        glBufferData(GL_ARRAY_BUFFER,
+                Utils.listoFloat(vertices),
+                GL_STATIC_DRAW);
 
-        // set vbo color
+        //set vboColor
         vboColor = glGenBuffers();
         glBindBuffer(GL_ARRAY_BUFFER, vboColor);
-        // mengirim vertices color
-        glBufferData(GL_ARRAY_BUFFER, Utils.listoFloat(verticesColor), GL_STATIC_DRAW);
+        glBufferData(GL_ARRAY_BUFFER,
+                Utils.listoFloat(verticesColor),
+                GL_STATIC_DRAW);
     }
-
     public void drawSetup(Camera camera, Projection projection){
         bind();
-        uniformsMap.setUniform("uniColor", color);
-        uniformsMap.setUniform("model", model);
-        uniformsMap.setUniform("view", camera.getViewMatrix());
-        uniformsMap.setUniform("projection", projection.getProjMatrix());
-        // bind vbo
+        uniformsMap.setUniform(
+                "uni_color", color);
+        uniformsMap.setUniform(
+                "model", model);
+        uniformsMap.setUniform(
+                "view", camera.getViewMatrix());
+        uniformsMap.setUniform(
+                "projection", projection.getProjMatrix());
+        // Bind VBO
         glEnableVertexAttribArray(0);
         glBindBuffer(GL_ARRAY_BUFFER, vbo);
-        glVertexAttribPointer(0,3, GL_FLOAT, false, 0, 0);
-    }
+        glVertexAttribPointer(0, 3,
+                GL_FLOAT,
+                false,
+                0, 0);
 
+    }
     public void drawSetupWithVerticesColor(){
         bind();
-        // bind vbo
+        // Bind VBO
         glEnableVertexAttribArray(0);
         glBindBuffer(GL_ARRAY_BUFFER, vbo);
-        glVertexAttribPointer(0,3, GL_FLOAT, false, 0, 0);
+        glVertexAttribPointer(0, 3,
+                GL_FLOAT,
+                false,
+                0, 0);
 
-        // bind vbo color
+        // Bind VBOColor
         glEnableVertexAttribArray(1);
         glBindBuffer(GL_ARRAY_BUFFER, vboColor);
-        glVertexAttribPointer(1,3, GL_FLOAT, false, 0, 0);
+        glVertexAttribPointer(1, 3,
+                GL_FLOAT,
+                false,
+                0, 0);
     }
-
     public void draw(Camera camera, Projection projection){
         drawSetup(camera, projection);
-        // draw vertices
-        glLineWidth(10);
-        glPointSize(10);
-        glDrawArrays(GL_POLYGON, 0, vertices.size());
+        // Draw the vertices
+        //optional
+        glLineWidth(10); //ketebalan garis
+        glPointSize(10); //besar kecil vertex
+        //wajib
+        //GL_LINES
+        //GL_LINE_STRIP
+        //GL_LINE_LOOP
+        //GL_TRIANGLES
+        //GL_TRIANGLE_FAN
+        //GL_POINT
+        glDrawArrays(GL_TRIANGLES,
+                0,
+                vertices.size());
         for(Object child:childObject){
-            child.draw(camera, projection);
+            child.draw(camera,projection);
         }
     }
-
     public void drawWithVerticesColor(){
         drawSetupWithVerticesColor();
-        // draw vertices
-        glLineWidth(10);
-        glPointSize(10);
-        glDrawArrays(GL_TRIANGLES, 0, vertices.size());
-
+        // Draw the vertices
+        //optional
+        glLineWidth(10); //ketebalan garis
+        glPointSize(10); //besar kecil vertex
+        //wajib
+        //GL_LINES
+        //GL_LINE_STRIP
+        //GL_LINE_LOOP
+        //GL_TRIANGLES
+        //GL_TRIANGLE_FAN
+        //GL_POINT
+        glDrawArrays(GL_TRIANGLES,
+                0,
+                vertices.size());
     }
-
-    public void drawLine(Camera camera, Projection projection){
+    //    public void drawLine(){
+//        drawSetup();
+//        // Draw the vertices
+//        //optional
+//        glLineWidth(1); //ketebalan garis
+//        glPointSize(1); //besar kecil vertex
+//        glDrawArrays(GL_LINE_STRIP,
+//                0,
+//                vertices.size());
+//    }
+    public void addVertices(Vector3f newVertices){
+        vertices.add(newVertices);
         setupVAOVBO();
-        drawSetup(camera, projection);
-        glLineWidth(10);
-        glPointSize(10);
-        glDrawArrays(GL_LINE_STRIP, 0, vertices.size());
     }
-    public void addVertices(Vector3f newVector){
-        vertices.add(newVector);
-        setupVAOVBO();
-    }
-
-    public void setupVAOVBOCurve(){
-        // set vao
-        vao = glGenVertexArrays();
-        glBindVertexArray(vao);
-
-        // set vbo
-        vbo = glGenBuffers();
-        glBindBuffer(GL_ARRAY_BUFFER, vbo);
-
-        // mengirim vertices
-        glBufferData(GL_ARRAY_BUFFER, Utils.listoFloat(curveVertices), GL_STATIC_DRAW);
-    }
-
-    public void drawCurve(Camera camera, Projection projection){
-        if(vertices.size()<3) {
-            if(vertices.size()==2) drawLine(camera, projection);
-            return;
-        }
-        setupVAOVBOCurve();
-        drawSetup(camera, projection);
-        glLineWidth(10);
-        glPointSize(10);
-        glDrawArrays(GL_LINE_STRIP, 0, curveVertices.size());
-    }
-
-    public void updateCurve(){
-        if(vertices.size() < 1) return;
-        int size = vertices.size();
-
-        curveVertices.clear();
-        curveVertices.add(vertices.get(0));
-        double interval = 0.02;
-        for (double i = 0; i <= 1; i += interval) {
-            float tempx = 0, tempy = 0;
-            for(int p=0; p<size; p+=1){
-                //float coeff = (float)C(size-1,p) * (float)Math.pow(i,p) * (float)Math.pow(1-i,size-1-p);
-                float coeff = binomialCoefficient(size-1,p) * (float)Math.pow(i,p) * (float)Math.pow(1-i,size-1-p);
-                tempx += coeff * (vertices.get(p).x);
-                //System.out.println(coeff);
-                tempy += coeff * (vertices.get(p).y);
-            }
-            //System.out.println(Math.round(i/interval));
-            //System.out.println("tempx: " + tempx + "  tempy: " + tempy);
-            //System.out.println((tempx-curveVertices.get(curveVertices.size()-1).x) + " " + (tempy-curveVertices.get(curveVertices.size()-1).y));
-            curveVertices.add(new Vector3f(tempx, tempy, 0));
-        }
-        curveVertices.add(vertices.get(vertices.size()-1));
-    }
-
-    private static int binomialCoefficient(int n, int k) {
-        if (k == 0 || k == n) {
-            return 1;
-        } else {
-            return binomialCoefficient(n - 1, k - 1) + binomialCoefficient(n - 1, k);
-        }
-    }
-
-    public Vector3f updateCenterPoint(){
-        Vector3f centerTemp = new Vector3f();
-        model.transformPosition(0.0f,0.0f,0.0f,centerTemp);
-        return centerTemp;
-    }
-
-    public void translateObject(Float offsetX, Float offsetY, Float offsetZ){
-        model = new Matrix4f().translate(offsetX, offsetY, offsetZ).mul(new Matrix4f(model));
+    public void translateObject(Float offsetX,Float offsetY,Float offsetZ){
+        model = new Matrix4f().translate(offsetX,offsetY,offsetZ).mul(new Matrix4f(model));
+        updateCenterPoint();
         for(Object child:childObject){
             child.translateObject(offsetX,offsetY,offsetZ);
         }
     }
-    public void rotateObject(Float degree, Float offsetX, Float offsetY, Float offsetZ){
-        model = new Matrix4f().rotate(degree, offsetX, offsetY, offsetZ).mul(new Matrix4f(model));
+    public void rotateObject(Float degree, Float x,Float y,Float z){
+        model = new Matrix4f().rotate(degree,x,y,z).mul(new Matrix4f(model));
+        updateCenterPoint();
         for(Object child:childObject){
-            child.rotateObject(degree,offsetX,offsetY,offsetZ);
+            child.rotateObject(degree,x,y,z);
         }
+
     }
-    public void scaleObject(Float offsetX, Float offsetY, Float offsetZ){
-        model = new Matrix4f().scale(offsetX, offsetY, offsetZ).mul(new Matrix4f(model));
+    public void updateCenterPoint(){
+        Vector3f destTemp = new Vector3f();
+        model.transformPosition(0.0f,0.0f,0.0f,destTemp);
+        centerPoint.set(0,destTemp.x);
+        centerPoint.set(1,destTemp.y);
+        centerPoint.set(2,destTemp.z);
+        System.out.println(centerPoint.get(0) + " " + centerPoint.get(1));
+    }
+    public void scaleObject(Float scaleX,Float scaleY,Float scaleZ){
+        model = new Matrix4f().scale(scaleX,scaleY,scaleZ).mul(new Matrix4f(model));
         for(Object child:childObject){
-            child.translateObject(offsetX,offsetY,offsetZ);
+            child.translateObject(scaleX,scaleY,scaleZ);
         }
     }
 

@@ -22,7 +22,6 @@ public class MouseInput {
         leftButtonPressed = false;
         rightButtonPressed = false;
         inWindow = false;
-
         glfwSetCursorPosCallback(windowHandle, (handle, xpos, ypos) -> {
             currentPos.x = (float) xpos;
             currentPos.y = (float) ypos;
@@ -45,7 +44,9 @@ public class MouseInput {
     public Vector2f getScroll() {
         return scroll;
     }
-
+    public void setScroll(Vector2f scroll){
+        this.scroll = scroll;
+    }
     public Vector2f getDisplVec() {
         return displVec;
     }
@@ -70,6 +71,7 @@ public class MouseInput {
     }
 
     public boolean isLeftButtonPressed() {
+
         return leftButtonPressed;
     }
 
